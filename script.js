@@ -59,6 +59,8 @@ function fetchDataAndUpdate() {
       document.getElementById("res-light").textContent = `${data.luz} lux`;
       document.getElementById("res-wind").textContent = `${data.viento_velocidad} km/h (${data.viento_direccion})`;
       document.getElementById("res-rain").textContent = data.lluvia;
+      document.getElementById("res-rain-intensidad").textContent = "Intensidad: " + data.estado_lluvia;
+
     });
 }
 setInterval(fetchDataAndUpdate, 5000);
