@@ -28,3 +28,39 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     echo "❌ Método no permitido.";
 }
 ?>
+<?php
+$data = json_decode(file_get_contents("php://input"), true);
+
+if ($data) {
+    $fecha = date("Y-m-d");
+    $hora = date("H:i:s");
+
+    $registro = [
+        "temperatura" => $data["temperatura"],
+        "humedad" => $data["humedad"],
+        "suelo" => $data["suelo"],
+        "luz" => $data["luz"],
+        "viento_direccion" => $data["viento_direccion"],
+        "viento_velocidad" => $data["viento_velocidad"],
+        "lluvia" => $data["lluvia"],
+        "lluvia_mm" => $data["lluvia_mm"],
+        "estado_lluvia" => $data["estado_lluvia"],
+        "fecha" => $fecha,
+        "hora" => $hora
+    ];
+
+    $filename = "datos-" . $fecha . ".json";
+    $dataArray = [];
+
+    if (file_exists($filename)) {
+        $dataArray = json_decode(file_get_contents($filename), true);
+    }
+
+    $dataArray[] = $registro;
+    file_put_contents($filename, json_encode($dataArray, JSON_PRETTY_PRINT));
+
+    echo json_encode(["status" => "ok"]);
+} else {
+    echo json_encode(["status" => "error", "message" => "Datos no válidos"]);
+}
+?>
