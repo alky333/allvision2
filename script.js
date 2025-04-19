@@ -46,6 +46,7 @@ function fetchDataAndUpdate() {
       charts.wind.data.datasets[0].data.push(data.viento_velocidad);
       charts.rain.data.labels.push(now);
       charts.rain.data.datasets[0].data.push(data.lluvia.toLowerCase() === 'sí' ? 1 : 0);
+
       Object.values(charts).forEach(chart => {
         if (chart.data.labels.length > 10) {
           chart.data.labels.shift();
@@ -53,14 +54,20 @@ function fetchDataAndUpdate() {
         }
         chart.update();
       });
+
       document.getElementById("res-temp").textContent = `${data.temperatura} °C`;
       document.getElementById("res-hum").textContent = `${data.humedad} %`;
       document.getElementById("res-soil").textContent = `${data.suelo} %`;
       document.getElementById("res-light").textContent = `${data.luz} lux`;
       document.getElementById("res-wind").textContent = `${data.viento_velocidad} km/h (${data.viento_direccion})`;
       document.getElementById("res-rain").textContent = data.lluvia;
-      document.getElementById("res-rain-intensidad").textContent = "Intensidad: " + data.estado_lluvia;
 
+      const intensidad = data.estado_lluvia ?? "No disponible";
+      document.getElementById("res-rain-intensidad").textContent =
+        data.lluvia.toLowerCase() === "sí"
+          ? "Intensidad: " + intensidad
+          : "Sin lluvia";
     });
 }
+
 setInterval(fetchDataAndUpdate, 5000);
