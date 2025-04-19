@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>📊 Datos en Vivo</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+    }
+    pre {
+      background-color: #222;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>📡 Últimos datos de la estación</h1>
+  <pre id="datos">Cargando...</pre>
+
+  <script>
+    async function cargarDatos() {
+      try {
+        const response = await fetch('datos.json?_=' + new Date().getTime()); // evitar caché
+        const data = await response.json();
+        document.getElementById('datos').textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        document.getElementById('datos').textContent = '❌ Error al cargar los datos.';
+        console.error(error);
+      }
+    }
+
+    cargarDatos();
+    setInterval(cargarDatos, 5000); // cada 5 segundos
+  </script>
+</body>
+</html>
