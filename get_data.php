@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 require_once 'db.php';
 
-$fecha = $_GET['fecha'] ?? date('Y-m-d'); // Si no se pasa fecha, se usa la actual
+$fecha = $_GET['fecha'] ?? date('Y-m-d');
 
 $sql = "SELECT * FROM sensores WHERE fecha = ? ORDER BY hora ASC";
 $stmt = $conn->prepare($sql);
@@ -18,16 +18,15 @@ while ($row = $result->fetch_assoc()) {
 
 echo json_encode(array_map("utf8ize", $datos), JSON_PRETTY_PRINT);
 
-// Agrega esta función al final del archivo:
 function utf8ize($d) {
-    if (is_array($d)) {
-        foreach ($d as $k => $v) {
-            $d[$k] = utf8ize($v);
-        }
-    } elseif (is_string($d)) {
-        return utf8_encode($d);
+  if (is_array($d)) {
+    foreach ($d as $k => $v) {
+      $d[$k] = utf8ize($v);
     }
-    return $d;
+  } elseif (is_string($d)) {
+    return utf8_encode($d);
+  }
+  return $d;
 }
 
 $stmt->close();
