@@ -81,10 +81,6 @@ function fetchDataAndUpdate() {
         data.lluvia.toLowerCase() === "sí"
           ? "Intensidad: " + intensidad
           : "Sin lluvia";
-
-      document.getElementById("real-hora").textContent = horaActual;
-      document.getElementById("real-temp").textContent = data.temperatura;
-      document.getElementById("real-hum").textContent = data.humedad;
     });
 }
 
@@ -94,77 +90,11 @@ setInterval(fetchDataAndUpdate, 5000);
 // HISTÓRICO TEMPERATURA
 // =======================
 
-function cargarGraficoTemperaturaPorFecha(fecha) {
-  fetch(`get_data.php?fecha=${fecha}`)
-    .then(res => res.json())
-    .then(data => {
-      console.log("Datos recibidos para el gráfico:", data);
-
-      const labels = data.map(d => d.hora.slice(0, 5));
-      const temps = data.map(d => d.temperatura);
-
-      const ctx = document.getElementById("graficaTemp").getContext("2d");
-      if (window.graficaTemp) {
-        window.graficaTemp.destroy();
-      }
-
-      window.graficaTemp = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: labels,
-          datasets: [{
-            label: "Temperatura (°C)",
-            data: temps,
-            borderColor: "rgba(255, 99, 132, 1)",
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            tension: 0.4
-          }]
-        },
-        options: {
-          scales: {
-            y: { beginAtZero: false }
-          }
-        }
-      });
-
-      if (temps.length > 0) {
-        const max = Math.max(...temps);
-        const min = Math.min(...temps);
-        const prom = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
-        document.getElementById("temp-max").textContent = max;
-        document.getElementById("temp-min").textContent = min;
-        document.getElementById("temp-prom").textContent = prom;
-      } else {
-        document.getElementById("temp-max").textContent = "--";
-        document.getElementById("temp-min").textContent = "--";
-        document.getElementById("temp-prom").textContent = "--";
-      }
-    });
-}
-
-document.getElementById("fechaTemp").addEventListener("change", function () {
-  const fecha = this.value;
-  if (fecha) {
-    cargarGraficoTemperaturaPorFecha(fecha);
-  }
-});
-
-window.addEventListener("DOMContentLoaded", () => {
-  fetch("get_last_date.php")
-    .then(res => res.json())
-    .then(data => {
-      if (data.fecha) {
-        const inputFecha = document.getElementById("fechaTemp");
-        inputFecha.value = data.fecha;
-        cargarGraficoTemperaturaPorFecha(data.fecha);
-      }
-    });
-});
 function cargarHistoricoTemperatura() {
   fetch("get_temp_last5days.php")
     .then(res => res.json())
     .then(data => {
-      const dias = {};  // { '2025-04-19': [23, 22, ...], ... }
+      const dias = {};
       const horas = Array.from({length: 24}, (_, i) => `${i}:00`);
 
       data.forEach(d => {
@@ -195,7 +125,6 @@ function cargarHistoricoTemperatura() {
         }
       });
 
-      // Tabla resumen
       const resumen = {};
       data.forEach(d => {
         if (!resumen[d.fecha]) resumen[d.fecha] = { max: d.max, min: d.min, sum: d.promedio, count: 1 };
