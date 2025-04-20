@@ -26,7 +26,9 @@ const charts = {
   soil: crearGrafica('soilChart', 'Humedad del Suelo (%)', 'rgba(75, 192, 192, 1)'),
   light: crearGrafica('lightChart', 'Luz (lux)', 'rgba(255, 206, 86, 1)'),
   wind: crearGrafica('windChart', 'Velocidad del Viento (km/h)', 'rgba(153, 102, 255, 1)'),
-  rain: crearGrafica('rainChart', 'Lluvia (1=Sí, 0=No)', 'rgba(201, 203, 207, 1)')
+  rain: crearGrafica('rainChart', 'Lluvia (1=Sí, 0=No)', 'rgba(201, 203, 207, 1)'),
+  rain_mm: crearGrafica('rainMMChart', 'Precipitación (mm)', 'rgba(0, 200, 100, 1)')
+
 };
 
 function fetchDataAndUpdate() {
@@ -34,19 +36,31 @@ function fetchDataAndUpdate() {
     .then(response => response.json())
     .then(data => {
       const now = new Date().toLocaleTimeString();
+
+      // Agregar valores y etiquetas de tiempo a cada gráfico
       charts.temp.data.labels.push(now);
       charts.temp.data.datasets[0].data.push(data.temperatura);
+
       charts.hum.data.labels.push(now);
       charts.hum.data.datasets[0].data.push(data.humedad);
+
       charts.soil.data.labels.push(now);
       charts.soil.data.datasets[0].data.push(data.suelo);
+
       charts.light.data.labels.push(now);
       charts.light.data.datasets[0].data.push(data.luz);
+
       charts.wind.data.labels.push(now);
       charts.wind.data.datasets[0].data.push(data.viento_velocidad);
+
       charts.rain.data.labels.push(now);
       charts.rain.data.datasets[0].data.push(data.lluvia.toLowerCase() === 'sí' ? 1 : 0);
 
+      // Nuevo gráfico: lluvia en milímetros
+      charts.rain_mm.data.labels.push(now);
+      charts.rain_mm.data.datasets[0].data.push(data.lluvia_mm);
+
+      // Mantener solo los últimos 10 valores visibles por gráfico
       Object.values(charts).forEach(chart => {
         if (chart.data.labels.length > 10) {
           chart.data.labels.shift();
@@ -55,6 +69,7 @@ function fetchDataAndUpdate() {
         chart.update();
       });
 
+      // Actualizar el resumen en la interfaz
       document.getElementById("res-temp").textContent = `${data.temperatura} °C`;
       document.getElementById("res-hum").textContent = `${data.humedad} %`;
       document.getElementById("res-soil").textContent = `${data.suelo} %`;
@@ -70,4 +85,44 @@ function fetchDataAndUpdate() {
     });
 }
 
+
 setInterval(fetchDataAndUpdate, 5000);
+function crearGraficaTemperatura() {
+  const ctx = document.getElementById("graficaTemp").getContext("2d");
+  return new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [{
+        label: "Temperatura (°C)",
+        data: [],
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        tension: 0.4
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: false }
+      }
+    }
+  });
+}
+
+const graficaTemp = crearGraficaTemperatura();
+
+document.getElementById("fechaTemp").addEventListener("change", function () {
+  const fecha = this.value;
+  if (!fecha) return;
+
+  fetch(`get_data.php?fecha=${fecha}`)
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(d => d.hora.slice(0, 5));
+      const temps = data.map(d => d.temperatura);
+
+      graficaTemp.data.labels = labels;
+      graficaTemp.data.datasets[0].data = temps;
+      graficaTemp.update();
+    });
+});

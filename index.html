@@ -51,12 +51,31 @@
           </div>
           
       </div>
-      <div class="tab-pane fade" id="temp"><h3 class="mb-3">Temperatura 🌡️</h3><canvas id="tempChart"></canvas></div>
+      <div class="tab-pane fade" id="temp">
+        <h3 class="mb-3">Temperatura 🌡️</h3>
+        <div class="mb-3">
+          <label for="fechaTemp" class="form-label">Selecciona una fecha:</label>
+          <input type="date" id="fechaTemp" class="form-control" />
+        </div>
+        <canvas id="graficaTemp"></canvas>
+      </div>
+      
       <div class="tab-pane fade" id="hum"><h3 class="mb-3">Humedad 💧</h3><canvas id="humChart"></canvas></div>
       <div class="tab-pane fade" id="soil"><h3 class="mb-3">Humedad del Suelo 🌱</h3><canvas id="soilChart"></canvas></div>
       <div class="tab-pane fade" id="light"><h3 class="mb-3">Luz ☀️</h3><canvas id="lightChart"></canvas></div>
       <div class="tab-pane fade" id="wind"><h3 class="mb-3">Viento 🍃</h3><canvas id="windChart"></canvas></div>
-      <div class="tab-pane fade" id="rain"><h3 class="mb-3">Lluvia 🌧️</h3><canvas id="rainChart"></canvas></div>
+      <div class="tab-pane fade" id="rain">
+        <h3 class="mb-3">Lluvia 🌧️</h3>
+        <div class="mb-4">
+          <canvas id="rainChart"></canvas>
+          <p class="text-muted mt-2">Este gráfico muestra si hubo lluvia (1 = Sí, 0 = No)</p>
+        </div>
+        <div>
+          <canvas id="rainMMChart"></canvas>
+          <p class="text-muted mt-2">Milímetros de precipitación acumulada</p>
+        </div>
+      </div>
+      
     </div>
   </div>
   <button id="installButton" class="btn btn-outline-success" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 999;">
